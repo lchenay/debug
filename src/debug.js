@@ -35,6 +35,18 @@ exports.formatters = {};
 var prevTime;
 
 /**
+* Incremental cursor to have better color distribution
+*/
+
+var prevColor = 0;
+
+/**
+* Colors stickiness
+*/
+
+var previousColors = {};
+
+/**
  * Select a color.
  * @param {String} namespace
  * @return {Number}
@@ -42,14 +54,14 @@ var prevTime;
  */
 
 function selectColor(namespace) {
-  var hash = 0, i;
-
-  for (i in namespace) {
-    hash  = ((hash << 5) - hash) + namespace.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
+  var previousColor = previousColors[namespace];
+  if (previousColor !== undefined) {
+    return previousColor;
   }
 
-  return exports.colors[Math.abs(hash) % exports.colors.length];
+  previousColors[namespace] = exports.colors[prevColor++ % exports.colors.length];
+
+  return previousColors[namespace];
 }
 
 /**
